@@ -8,6 +8,8 @@ tags: skills
 
 This is a linux documents use debian 10
 
+View it on HACKMD: [https://hackmd.io/@wilicw/linuxSkills](https://hackmd.io/@wilicw/linuxSkills)
+
 **Linux Distribution :** Debian 10
 
 ![Debian][logo]
