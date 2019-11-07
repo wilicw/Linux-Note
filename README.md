@@ -4,6 +4,8 @@ description: TW Skills
 tags: skills
 ---
 
+![Banner][banner]
+
 # Overview
 
 This is a linux documents use debian 10
@@ -946,5 +948,6 @@ reboot
 
 - [vsftp](https://linux.die.net/man/5/vsftpd.conf)
 
+[banner]: https://i.imgur.com/PJMJYmn.png
 [logo]: https://www.debian.org/logos/openlogo.svg
 [iptablesimg]: https://i.imgur.com/RO0lPSf.gif
