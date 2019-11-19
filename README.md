@@ -1,6 +1,6 @@
 ---
 title: Linux
-description: TW Skills
+description: My Linux note about server and something...
 tags: skills
 ---
 
@@ -46,17 +46,38 @@ sudo vim /etc/hostname
 
 ## Users
 
-### ADD user
+### Add user
 
 `sudo useradd -m -d "/home/username" -s /bin/bash username`
 
+#### Python script (add users)
+
+```python=
+import os
+
+os.system("groupadd groupName")
+
+for i in range(1, 51): # 1~50
+    username = ""
+    password = ""
+    name = "{}{:02d}".format(username, i)
+    os.system("useradd -s /bin/bash {}".format(name))
+    os.system("usermod -aG sudo {}".format(name)) # in fedora sduo calls wheel
+    os.system("usermod -aG gourpName {}".format(name))
+    os.system("echo \"{}:{}\" | chpasswd".format(name, password))
+```
+
 ### Remove user
 
-`sudo userdel -r username` 
+```bash
+sudo userdel -r username
+```
 
 ### New group
 
-`sudo groupadd group_kawaii_no_joshi_shougakusei_name`
+```bash
+sudo groupadd group_kawaii_no_joshi_shougakusei_name
+```
 
 ### Change Folder group
 
@@ -576,8 +597,11 @@ NAT configuration via iptables
 ```bash
 sudo iptables -A INPUT -i lo -j ACCEPT
 # Allow loopback
-sudo iptables -t nat -A POSTROUTING -o ens33 -j MASQUERADE
-# Forward packages to ens33
+# out wlo1
+iptables -t nat -A POSTROUTING -o wlo1 -j MASQUERADE
+# forward eno1 to wlo1
+iptables -A FORWARD -i eno1 -o wlo1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i eno1 -o wlo1 -j ACCEPT
 ```
 
 ### Port Forwarding
