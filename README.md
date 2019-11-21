@@ -8,7 +8,7 @@ tags: skills
 
 # Overview
 
-This is a linux documents use debian 10
+This is a linux documents using debian 10
 
 View it on HACKMD: [https://hackmd.io/@wilicw/linuxSkills](https://hackmd.io/@wilicw/linuxSkills)
 
@@ -73,6 +73,14 @@ for i in range(1, 51): # 1~50
 sudo userdel -r username
 ```
 
+### Change Password via shell script
+
+```bash
+echo "username:password" | chpasswd
+```
+
+## Groups
+
 ### New group
 
 ```bash
@@ -85,10 +93,32 @@ sudo groupadd group_kawaii_no_joshi_shougakusei_name
 sudo chgrp group_name folder_name
 ```
 
-### Change Password via shell script
+### Config group admin
 
 ```bash
-echo "username:password" | chpasswd
+sudo gpasswd group_name
+```
+
+### Add group admin
+
+```bash
+sudo gpasswd -A username group_name
+```
+
+### Remove user from group
+
+Only group admin or root can do it
+
+```bash
+sudo gpasswd -d group_user group_name
+```
+
+### Add User in group
+
+Only group admin or root cna do it
+
+```bash
+sudo gpasswd -a username group_name
 ```
 
 ## Network
@@ -200,7 +230,7 @@ User3
 User4
 ```
 
-Allow > Deny
+Level: Allow > Deny
 
 ### List jobs
 
@@ -211,7 +241,7 @@ crontab -l
 ### Remove all jobs
 
 ```bash
-cromtab -r
+crontab -r
 ```
 
 ### Add jobs
@@ -222,7 +252,7 @@ Edit User's crontab
 crontab -e
 ```
 
-or Edit System's crontb in `/etc/crontab` using root
+or Edit System's crontb in `/etc/crontab` as root
 
 Format
 
