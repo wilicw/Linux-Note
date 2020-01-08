@@ -107,7 +107,7 @@ sudo gpasswd -A username group_name
 
 ### Remove user from group
 
-Only group admin or root can do it
+- Only group admin or root can do it
 
 ```bash
 sudo gpasswd -d group_user group_name
@@ -115,7 +115,7 @@ sudo gpasswd -d group_user group_name
 
 ### Add User in group
 
-Only group admin or root cna do it
+- Only group admin or root cna do it
 
 ```bash
 sudo gpasswd -a username group_name
@@ -401,6 +401,18 @@ Enable the service
 sudo systemctl enable service-name
 ```
 
+## Shell
+
+### Limited history 
+
+Edit ~/.bashrc
+
+```bash=
+HISTSIZE=100
+HISTFILESIZE=100
+# saving the last 100 commands in history file
+```
+
 ---
 
 # Server
@@ -638,10 +650,12 @@ iptables -A FORWARD -i eno1 -o wlo1 -j ACCEPT
 
 IN interface: `ens33`
 
+forward 8080 port to 192.168.1.20:80
+
 ```bash
-sudo iptables -t nat -A PREROUTING -p tcp -i ens33 --dport 80 -j DNAT --to 192.168.1.20:80
+sudo iptables -t nat -A PREROUTING -p tcp -i ens33 --dport 8080 -j DNAT --to 192.168.1.20:80
 sudo iptables -A FORWARD -p tcp --dport 80 -d 192.168.1.20 -j ACCEPT
-# Forward tcp/80 to 192.168.1.20:80
+# Forward tcp/8080 to 192.168.1.20:80
 ```
 
 ## Samba Server
@@ -812,6 +826,8 @@ tar -czvf file.tgz file/
 
 ## Run Level
 
+### Overviews
+
 0 shutdown
 
 1 single user (no network)
@@ -826,7 +842,7 @@ tar -czvf file.tgz file/
 
 6 Reboot
 
-Change run level to X
+### Change run level to X
 
 ```bash
 sudo init X
@@ -834,7 +850,7 @@ sudo init X
 
 edit `/etc/inittab` to change default run level
 
-Show run level
+### Show run level
 
 ```bash
 sudo runlevel
@@ -972,7 +988,7 @@ apt install flex libffi-dev build-essential libncurses5-dev libssl-dev ccache gc
 
 ### Compile
 
-```
+```bash
 cd /usr/src/kernel/linux-5.2.2
 make mrproper
 make clean
@@ -983,7 +999,7 @@ make all
 
 ### Install kernel
 
-```
+```bash
 make modules_install
 make install
 grub-mkconfig -o /boot/grub/grub.cfg
