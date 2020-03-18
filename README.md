@@ -123,12 +123,35 @@ sudo gpasswd -a username group_name
 
 ## Network
 
-File: `/etc/network/interfaces`
+main file: `/etc/network/interfaces`
 
-force to clean ip of interface
+### Interface
+
+Change interface name to old syntax (ens33 -> eth0)
+
+
+```base
+vim /etc/default/grub
+```
+
+Add `net.ifnames=0 biosdevname=0` into `GRUB_CMDLINE_LINUX`
 
 ```
-ip addr flush dev eth0  
+...
+GRUB_CMDLINE_LINUX="net.ifname=0 biosdevname=0"
+...
+```
+
+Update grub
+
+```
+sudo update-grub
+```
+
+
+force to clean ip of interface
+```
+ip addr flush dev eth0
 ```
 
 ### DHCP (Dynamic Host Configuration Protocol)
