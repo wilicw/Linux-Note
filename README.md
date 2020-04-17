@@ -79,6 +79,21 @@ sudo userdel -r username
 echo "username:password" | chpasswd
 ```
 
+### User change password expiration time
+
+```bash
+sudo chage -m 999 [username]
+```
+
+### Execute a script when user logout
+
+Edit /home/user/.bash_logout
+
+```bash=
+#!/bin/bash
+# shell script
+```
+
 ## Groups
 
 ### New group
@@ -216,7 +231,6 @@ iface bond0 inet dhcp
     bond-downdelay 400
     bond-updelat 800
 ```
-
 
 ```bash
 sudo ifdown eth0 eth1
@@ -495,7 +509,16 @@ Enable ip forward setting
 sudo sysctl net.ipv4.ip_forward=1
 ```
 
-See [IPtables -> NAT](#NAT)
+Forward enable at evey boot
+
+Edit `/etc/sysctl.conf`
+
+```
+...
+net.ipv4.ip_forward=1
+```
+
+See [NFTables](#NFTables)
 
 ## DHCP Server
 
@@ -630,6 +653,10 @@ ns.skills39.co.           60      IN      A       10.0.13.212
 
 ![IPtables Overview][iptablesimg]
 
+iptables is replace by nftables
+
+more at #nftables
+
 ### Allow lookback
 
 ```bash
@@ -660,13 +687,19 @@ sudo iptables -X
 NAT configuration via iptables
 
 ```bash
+echo "1" > /proc/sys/net/ipv4_forward
 sudo iptables -A INPUT -i lo -j ACCEPT
 # Allow loopback
-# out wlo1
-iptables -t nat -A POSTROUTING -o wlo1 -j MASQUERADE
-# forward eno1 to wlo1
-iptables -A FORWARD -i eno1 -o wlo1 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i eno1 -o wlo1 -j ACCEPT
+iptables -t nat -A POSTROUTING -s 0.0.0.0/0 -o eth0 -j MASQUERADE
+```
+
+### NAT
+
+Edit `/etc/sysctl.conf`
+```
+...
+
+net.ipv4.ip_forward=1
 ```
 
 ### Port Forwarding
@@ -679,6 +712,65 @@ forward 8080 port to 192.168.1.20:80
 sudo iptables -t nat -A PREROUTING -p tcp -i ens33 --dport 8080 -j DNAT --to 192.168.1.20:80
 sudo iptables -A FORWARD -p tcp --dport 80 -d 192.168.1.20 -j ACCEPT
 # Forward tcp/8080 to 192.168.1.20:80
+```
+
+## NFTables
+
+### Overview
+
+Configration file at `/etc/nftables.conf`
+
+#### Install
+
+```bash
+sudo apt install nftables
+```
+
+#### Enable nftables at boot
+
+```bash
+sudo systemctl enable nftables
+```
+
+### NAT
+
+#### Basic
+
+Edit config file
+
+```
+table ip nat {
+    chain prerouting {
+        type nat hook prerouting priority -100;
+    }
+    chain postrouting {
+        type nat hook postrouting priority -100;
+    }
+}
+```
+
+#### SNAT
+
+Edit `/etc/nftables.conf`
+
+```
+add rule nat postrouting masquerade
+```
+
+#### DNAT
+
+<!--
+Forward `eth0` 80 port to 192.168.1.2:80
+
+```
+add rule nat prerouting iif eth0 tcp dport { 80 } dnat 192.168.1.2
+```
+-->
+
+Forward `8080` to 192.168.1.12:80
+
+```
+add rule nat prerouting dnat tcp dport map { 8080 : 192.168.1.12 } : tcp dport map { 8080 : 80 }
 ```
 
 ## Samba Server
@@ -863,6 +955,7 @@ tar -czvf file.tgz file/
 
 5 multiple user with gui
 
+
 6 Reboot
 
 ### Change run level to X
@@ -954,6 +1047,9 @@ sudo systemctl restart nginx
 
 ```bash
 sudo apt install openssl
+
+# enable ssl mod
+sudo a2enmod ssl
 
 openssl genrsa -out private.key 2048
 
