@@ -153,7 +153,7 @@ Add `net.ifnames=0 biosdevname=0` into `GRUB_CMDLINE_LINUX`
 
 ```
 ...
-GRUB_CMDLINE_LINUX="net.ifname=0 biosdevname=0"
+GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
 ...
 ```
 
@@ -454,6 +454,68 @@ HISTFILESIZE=100
 
 # Server
 
+## Web
+
+### Nginx
+
+Install nginx
+
+```bash
+sudo apt install nginx
+```
+
+Start nginx in startup
+
+```bash
+sudo systemctl enable nginx
+```
+
+### Authentication
+
+Using `htpasswd` command
+
+```
+sudo apt install apache2-utils
+```
+
+Create password file in `/var/www/.passwd` via `htpasswd`
+
+```
+htpasswd -c /var/www/.passwd user0
+```
+
+Adding more user in passwd file
+
+```
+htpasswd /var/www/.passwd user1
+```
+
+Configuring nginx
+
+```jsonld
+# restric /admin but allow /admin/pubic
+location /secret {
+    auth_basic "Administrator’s Area";
+    auth_basic_user_file /var/www/.passwd;
+
+    location /public/ {
+        auth_basic off;
+    }
+}
+```
+
+### IP address restriction
+
+```jsonld
+# allow 192.168.1.0/24 but deny 192.168.1.2
+location /private {
+    deny  192.168.1.2;
+    allow 192.168.1.1/24;
+    allow 127.0.0.1;
+    deny  all;
+}
+```
+
 ## SSH Server
 
 ```bash
@@ -500,6 +562,10 @@ Edit /etc/fail2ban/jail.local
 ```bash
 sudo systemctl restart fail2ban 
 ```
+
+### MFA
+
+...
 
 ## NAT Server (Network Address Translation)
 
@@ -759,18 +825,10 @@ add rule nat postrouting masquerade
 
 #### DNAT
 
-<!--
 Forward `eth0` 80 port to 192.168.1.2:80
 
 ```
 add rule nat prerouting iif eth0 tcp dport { 80 } dnat 192.168.1.2
-```
--->
-
-Forward `8080` to 192.168.1.12:80
-
-```
-add rule nat prerouting dnat tcp dport map { 8080 : 192.168.1.12 } : tcp dport map { 8080 : 80 }
 ```
 
 ## Samba Server
@@ -1136,6 +1194,10 @@ reboot
 ### FTP
 
 - [vsftp](https://linux.die.net/man/5/vsftpd.conf)
+
+### Nginx
+
+- [nginx documentation](https://docs.nginx.com/)
 
 [banner]: https://i.imgur.com/PJMJYmn.png
 [logo]: https://www.debian.org/logos/openlogo.svg
