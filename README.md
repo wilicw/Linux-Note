@@ -136,6 +136,16 @@ sudo gpasswd -d group_user group_name
 sudo gpasswd -a username group_name
 ```
 
+### Bashrc for group
+
+Edit `/etc/profile`
+
+```
+if [ `id -ng` = "the_cool_group_name" ] ; then
+    # do stuff for people in the_cool_group
+fi
+```
+
 ## Network
 
 main file: `/etc/network/interfaces`
@@ -189,6 +199,12 @@ iface eth0 inet static
     address 192.168.0.7
     netmask 255.255.255.0
     gateway 192.168.0.254 
+```
+
+#### Mutliple addresses
+
+```
+
 ```
 
 ### PPPoE
@@ -442,12 +458,21 @@ sudo systemctl enable service-name
 
 ### Limited history 
 
-Edit ~/.bashrc
+Edit `~/.bashrc`
 
 ```bash=
 HISTSIZE=100
 HISTFILESIZE=100
 # saving the last 100 commands in history file
+```
+
+### Auto logout
+
+Edit `~/.bashrc`
+
+```bash=
+TMOUT=60
+# 60 sec
 ```
 
 ---
@@ -516,6 +541,15 @@ location /private {
 }
 ```
 
+### Load Balancer
+
+```jsonld
+upstream myweb {
+    server 192.168.10.1 weight=3;
+    server 192.168.10.2 weight=2;
+}
+```
+
 ## SSH Server
 
 ```bash
@@ -565,7 +599,27 @@ sudo systemctl restart fail2ban
 
 ### MFA
 
-...
+Generating RSA Key pair in client pc
+
+```bash
+ssh-keygen
+```
+
+Copy rsa id to server
+
+```bash
+ssh-copy-id -i ~/.ssh/id_rsa root@127.0.0.1
+```
+
+
+Edit Server side config
+
+```
+# commit this line
+# PasswordAuthentication yes
+PubKeyAuthenication yes
+AuthenicationMethods publickey, password
+```
 
 ## NAT Server (Network Address Translation)
 
@@ -582,6 +636,12 @@ Edit `/etc/sysctl.conf`
 ```
 ...
 net.ipv4.ip_forward=1
+```
+
+If want to allow PPTP passthrough. Need to add following in `/etc/sysctl.conf` and `modprobe ip_nat_pptp`
+
+```
+net.netfilter.nf_conntrack_helper=1
 ```
 
 See [NFTables](#NFTables)
@@ -636,6 +696,27 @@ Show dhcp client
 ```
 cat /var/lib/dhcp/dhcpd.leases
 ```
+
+### DHCP helper
+
+```bash
+sudo apt install dhcp-helper
+```
+
+Edit `/etc/default/dhcp-helper`
+
+```yaml
+# Option flags used to start dhcp-helper.
+#
+# You will need at least "-s " or
+# "-b so that dhcp-helper knows where
+# to relay DHCP requests.
+#
+# See "man 8 dhcp-helper" for more details.
+DHCPHELPER_OPT="-s 192.168.10.2"
+```
+
+Forward all dhcp requests traffic to 192.168.10.2
 
 ## DNS Server
 
@@ -821,6 +902,9 @@ Edit `/etc/nftables.conf`
 
 ```
 add rule nat postrouting masquerade
+add rule nat postrouting ip saddr 192.168.0.0/24 oif eth1 snat 10.0.0.1
+
+# all traffic from 192.168.0.0/24 will be forward to eth1 and ip masquerade as 10.0.0.1 
 ```
 
 #### DNAT
@@ -996,6 +1080,23 @@ tar -czvf file.tgz file/
 ---
 
 # Others
+
+## Logrotate
+
+Edit `/etc/logrotate.d/log`
+
+```
+/path/to/your/rails/current/log/*.log {
+  daily # daily backup
+  dateext # record date time
+  missingok 
+  rotate 65535 # keep 65535
+  compress # using gzip compress
+  delaycompress
+  notifempty
+  copytruncate
+}
+```
 
 ## Run Level
 
