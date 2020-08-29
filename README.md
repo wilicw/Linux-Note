@@ -4,6 +4,9 @@ description: My Linux note about server and something...
 tags: skills
 ---
 
+[![hackmd-github-sync-badge](https://hackmd.io/ydsVQJngSCa5F2DGhFh6CQ/badge)](https://hackmd.io/ydsVQJngSCa5F2DGhFh6CQ)
+
+
 ![Banner][banner]
 
 # Overview
@@ -204,6 +207,17 @@ iface eth0 inet static
 #### Mutliple addresses
 
 ```
+auto eth0:0
+iface eth0:0 inet static
+    address 192.168.0.7
+    netmask 255.255.255.0
+    gateway 192.168.0.254 
+
+auto eth0:1
+iface eth0:1 inet static
+    address 192.168.0.8
+    netmask 255.255.255.0
+    gateway 192.168.0.254 
 
 ```
 
@@ -638,11 +652,7 @@ Edit `/etc/sysctl.conf`
 net.ipv4.ip_forward=1
 ```
 
-If want to allow PPTP passthrough. Need to add following in `/etc/sysctl.conf` and `modprobe ip_nat_pptp`
-
-```
-net.netfilter.nf_conntrack_helper=1
-```
+If want to allow PPTP passthrough. Run `modprobe ip_nat_pptp`
 
 See [NFTables](#NFTables)
 
