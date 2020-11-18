@@ -82,6 +82,12 @@ sudo userdel -r username
 echo "username:password" | chpasswd
 ```
 
+### Set user password to empty
+
+```bash
+sudo passwd -d [username]
+```
+
 ### User change password expiration time
 
 ```bash
@@ -95,6 +101,24 @@ Edit /home/user/.bash_logout
 ```bash=
 #!/bin/bash
 # shell script
+```
+
+### Allow root using Gnome Desktop
+
+Edit `/etc/gdm3/daemon.conf`
+
+```
+[security]
+...
+AllowRoot=true
+...
+```
+
+Edit `/etc/pam.d/gdm-password`
+
+```
+# auth required pam_succeed_if.so user != root quiet_success
+# comment this line
 ```
 
 ## Groups
@@ -1149,16 +1173,10 @@ Install openssl package
 sudo apt install openssl
 ```
 
-Generate a private key
+Generate a private key and request file
 
 ```bash
-openssl genrsa -out server.key 2048
-```
-
-Create a request file. The .csr file is request file
-
-```bash
-openssl req -new -key server.key -out server.csr
+openssl req -new -newkey rsa:2048 -nodes -keyout server.key -out server.csr
 ```
 
 Common Name is your domain name
